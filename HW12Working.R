@@ -24,10 +24,10 @@ library(effectsize)
 
 (t30.value <- qt(0.95, df = 30-1))
 
-#Part (c): Conduct a simulation study to assess the Type I error rate of this approach.
+# Part (c): Conduct a simulation study to assess the Type I error rate of this approach.
 
 # install.packages("VGAM")
-#?rlaplace()
+# ?rlaplace()
 
 library(VGAM)
 a = 0
@@ -65,5 +65,113 @@ errors.30 <- type1.30/10000
 no.errors <- no.error/10000
 type1.error <- (type1.20 + type1.30)/10000
 
-###########################################
+######################################################################################
+# Step 2. 
+
+# sample size
+n <- 15
+
+# true mean for Beta(10,2)
+mean.10.2 <- 10/(10+2)
+
+# true mean for Beta(2,10)
+
+mean.2.10 <- 2/(2+10)
+
+# true mean for Beta(10,10)
+
+mean.10.10 <- 10/(10+10)
+
+
+# will loop over and add to
+
+left_tail <- c(0,0,0)
+right_tail <- c(0,0,0)
+two_tail <- c(0,0,0)
+
+# start loop
+# ?rbeta
+
+for (i in 1:10000){
+  beta1 <- rbeta(n, 10, 2)
+  beta2 <- rbeta(n, 2, 10)
+  beta3 <- rbeta(n, 10, 10)
+
+# part (a): What proportion of the time do we make an error of Type I for a left-tailed test?
+
+  # Left-Tailed Test
+  left.10.2 <- t.test(beta1,
+                  mu = mean.10.2,
+                  alternative = "less")
+  left.2.10 <- t.test(beta2,
+                  mu = mean.2.10,
+                  alternative = "less")
+  left.10.10 <- t.test(beta3,
+                  mu = mean.10.10,
+                  alternative = "less")
+  
+  # Keeping track of type 1 errors for each distribution
+  
+  left_tail[1] <- left_tail[1] + (left.10.2$p.value < 0.05)
+  left_tail[2] <- left_tail[2] + (left.2.10$p.value < 0.05)
+  left_tail[3] <- left_tail[3] + (left.10.10$p.value < 0.05)
+
+
+
+
+# part (b): What proportion of the time do we make an error of Type I for a right-tailed test?
+
+  # Left-Tailed Test
+  right.10.2 <- t.test(beta1,
+                      mu = mean.10.2,
+                      alternative = "greater")
+  right.2.10 <- t.test(beta2,
+                      mu = mean.2.10,
+                      alternative = "greater")
+  right.10.10 <- t.test(beta3,
+                       mu = mean.10.10,
+                       alternative = "greater")
+  
+  # Keeping track of type 1 errors for each distribution
+  
+  right_tail[1] <- right_tail[1] + (right.10.2$p.value < 0.05)
+  right_tail[2] <- right_tail[2] + (right.2.10$p.value < 0.05)
+  right_tail[3] <- right_tail[3] + (right.10.10$p.value < 0.05)
+
+
+
+# part (c): What proportion of the time do we make an error of Type I for a two-tailed test?
+
+  # Left-Tailed Test
+  two_tail.10.2 <- t.test(beta1,
+                       mu = mean.10.2,
+                       alternative = "two.sided")
+  two_tail.2.10 <- t.test(beta2,
+                       mu = mean.2.10,
+                       alternative = "two.sided")
+  two_tail.10.10 <- t.test(beta3,
+                        mu = mean.10.10,
+                        alternative = "two.sided")
+  
+  # Keeping track of type 1 errors for each distribution
+  
+  two_tail[1] <- two_tail[1] + (two_tail.10.2$p.value < 0.05)
+  two_tail[2] <- two_tail[2] + (two_tail.2.10$p.value < 0.05)
+  two_tail[3] <- two_tail[3] + (two_tail.10.10$p.value < 0.05)
+
+}
+
+
+# part (a): What proportion of the time do we make an error of Type I for a left-tailed test?
+type1.error.left <- left_tail/10000
+
+# part (b): What proportion of the time do we make an error of Type I for a right-tailed test?
+type1.error.right <- right_tail/10000
+
+# part (c): What proportion of the time do we make an error of Type I for a two-tailed test?
+type1.error.two_sided <- two_tail/10000
+
+# part (d): How does skewness of the underlying population distribution effect Type I error across the test types?
+  
+
 
