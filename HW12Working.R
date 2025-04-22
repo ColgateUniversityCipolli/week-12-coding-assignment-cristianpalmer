@@ -172,6 +172,11 @@ type1.error.right <- right_tail/10000
 type1.error.two_sided <- two_tail/10000
 
 # part (d): How does skewness of the underlying population distribution effect Type I error across the test types?
-  
-
+results <- tibble(
+  Distribution = c("Beta(10,2)", "Beta(2,10)", "Beta(10,10)"),
+  "Left-Tailed Test" = type1.error.left,
+  "Right-Tailed Test" = type1.error.right,
+  "Two-Tailed Test" = type1.error.two_sided
+)
+results
 
