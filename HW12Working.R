@@ -32,25 +32,38 @@ library(effectsize)
 library(VGAM)
 a = 0
 b = 4.0
+type1.20 <- 0 
+type1.30 <- 0
+no.error <- 0
 
 for (i in 1:10000){
   simulations <- rlaplace(n = 30, location = a, scale = b)
-# Outcome 1: Discernible support for the alternative at time 20 (Type I Error)
+  
   t <- t.test(simulations[1:20],
               mu = 0,
               alternative = "greater")
-
   
-  
-# Outcome 2: Not discernible support for the alternative at time 20 and discernible support for the alternative at time 30 (Type I Error)
-  
-  
-# Outcome 3: Not discernible support for the alternative at time 20 and time 30 (Not an error)
-  
-  
-  
-  
-}
+  # Outcome 1: Discernible support for the alternative at time 20 (Type I Error)
+  if (t$p.value < 0.05){
+    type1.20 <- type1.20 + 1
+  } else {
+    # Outcome 2: Not discernible support for the alternative at time 20 and discernible support for the alternative at time 30 (Type I Error)
+    t2 <- t.test(simulations[1:30],
+                 mu = 0,
+                 alternative = "greater")
+    
+    if (t2$p.value < 0.05){
+      type1.30 <- type1.30 + 1
+    } else {
+      # Outcome 3: Not discernible support for the alternative at time 20 and time 30 (Not an error)
+      no.error <- no.error + 1
+    }
+  }
+}  
+errors.20 <- type1.20/10000
+errors.30 <- type1.30/10000
+no.errors <- no.error/10000
+type1.error <- (type1.20 + type1.30)/10000
 
 ###########################################
 
